@@ -16,17 +16,17 @@ let DynamoDBModule = class DynamoDBModule {
 exports.DynamoDBModule = DynamoDBModule;
 exports.DynamoDBModule = DynamoDBModule = __decorate([
     (0, common_1.Module)({
+        imports: [config_1.ConfigModule],
         providers: [
             {
-                provide: 'DYNAMODB_DOCUMENT_CLIENT',
-                inject: [config_1.ConfigService],
+                provide: 'DYNAMODB_CLIENT',
                 useFactory: (configService) => {
                     const config = {
                         credentials: {
                             accessKeyId: configService.get('AUTH_DYNAMODB_ID'),
                             secretAccessKey: configService.get('AUTH_DYNAMODB_SECRET'),
                         },
-                        region: process.env.AUTH_DYNAMODB_REGION,
+                        region: configService.get('AUTH_DYNAMODB_REGION'),
                     };
                     return lib_dynamodb_1.DynamoDBDocumentClient.from(new client_dynamodb_1.DynamoDB(config), {
                         marshallOptions: {
@@ -35,10 +35,11 @@ exports.DynamoDBModule = DynamoDBModule = __decorate([
                             convertClassInstanceToMap: true,
                         },
                     });
-                }
+                },
+                inject: [config_1.ConfigService],
             }
         ],
-        exports: ['DYNAMODB_DOCUMENT_CLIENT'],
+        exports: ['DYNAMODB_CLIENT'],
     })
 ], DynamoDBModule);
 //# sourceMappingURL=dynamodb.module.js.map

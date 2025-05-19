@@ -7,7 +7,7 @@ import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
 export class TeamsService {
 
   constructor(
-    @Inject('DYNAMODB_DOCUMENT_CLIENT')
+    @Inject('DYNAMODB_CLIENT')
     private readonly dynamoClient: DynamoDBDocumentClient,
   ) { }
 

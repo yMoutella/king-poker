@@ -1,11 +1,14 @@
-import { UUID } from "node:crypto";
-export declare class CreateTeamDto {
-    id: UUID;
+import { Team } from "../entities/team.entity";
+interface Members {
+    email: string;
+}
+declare const CreateTeamDto_base: import("@nestjs/mapped-types").MappedType<Partial<Team>>;
+export declare class CreateTeamDto extends CreateTeamDto_base {
     name: string;
     description: string;
     user_adm: string;
     scrum_master: string;
-    members: string[];
+    members: Members[];
     createdAt: string;
     updatedAt: string;
     isActive: boolean;
@@ -13,3 +16,4 @@ export declare class CreateTeamDto {
     createdBy: string;
     updatedBy: string;
 }
+export {};

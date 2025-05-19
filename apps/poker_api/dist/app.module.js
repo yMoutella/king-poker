@@ -20,9 +20,7 @@ exports.AppModule = AppModule = __decorate([
         imports: [teams_module_1.TeamsModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                envFilePath: '.env'
-            }),
-        ],
+            })],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

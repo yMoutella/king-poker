@@ -50,7 +50,7 @@ let TeamsService = class TeamsService {
 exports.TeamsService = TeamsService;
 exports.TeamsService = TeamsService = __decorate([
     (0, common_1.Injectable)(),
-    __param(0, (0, common_1.Inject)('DYNAMODB_DOCUMENT_CLIENT')),
+    __param(0, (0, common_1.Inject)('DYNAMODB_CLIENT')),
     __metadata("design:paramtypes", [lib_dynamodb_1.DynamoDBDocumentClient])
 ], TeamsService);
 //# sourceMappingURL=teams.service.js.map

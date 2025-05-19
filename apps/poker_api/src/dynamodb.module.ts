@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
 import { DynamoDB, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb"
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
+    imports: [ConfigModule],
     providers: [
         {
-            provide: 'DYNAMODB_DOCUMENT_CLIENT',
-            inject: [ConfigService],
+            provide: 'DYNAMODB_CLIENT',
             useFactory: (configService: ConfigService) => {
                 const config: DynamoDBClientConfig = {
                     credentials: {
                         accessKeyId: configService.get<string>('AUTH_DYNAMODB_ID')!,
                         secretAccessKey: configService.get<string>('AUTH_DYNAMODB_SECRET')!,
                     },
-                    region: process.env.AUTH_DYNAMODB_REGION,
+                    region: configService.get<string>('AUTH_DYNAMODB_REGION')!,
                 }
 
                 return DynamoDBDocumentClient.from(new DynamoDB(config), {
@@ -24,9 +24,11 @@ import { ConfigService } from '@nestjs/config';
                         convertClassInstanceToMap: true,
                     },
                 })
-            }
+            },
+            inject: [ConfigService],
         }
     ],
-    exports: ['DYNAMODB_DOCUMENT_CLIENT'],
+    exports: ['DYNAMODB_CLIENT'],
 })
-export class DynamoDBModule { }
+export class DynamoDBModule {
+}

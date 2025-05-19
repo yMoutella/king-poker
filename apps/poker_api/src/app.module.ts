@@ -8,9 +8,7 @@ import { ConfigModule } from '@nestjs/config';
   imports: [TeamsModule,
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env'
-    }),
-  ],
+    })],
   controllers: [AppController],
   providers: [AppService],
 })
