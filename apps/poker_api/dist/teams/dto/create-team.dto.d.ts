@@ -1,6 +1,5 @@
 import { UUID } from "node:crypto";
-
-export class CreateTeamDto {
+export declare class CreateTeamDto {
     id: UUID;
     name: string;
     description: string;
