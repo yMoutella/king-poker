@@ -15,16 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamsController = void 0;
 const common_1 = require("@nestjs/common");
 const teams_service_1 = require("./teams.service");
-const create_team_dto_1 = require("./dto/create-team.dto");
-const update_team_dto_1 = require("./dto/update-team.dto");
+const team_dto_1 = require("./dto/team.dto");
 let TeamsController = class TeamsController {
     teamsService;
     constructor(teamsService) {
         this.teamsService = teamsService;
     }
-    create(createTeamDto, res) {
+    create(createTeamDto) {
         const result = this.teamsService.create(createTeamDto);
-        return res.status(201).json(result);
+        return result;
     }
     findAll(response) {
         const mock = this.teamsService.findAll();
@@ -33,8 +32,8 @@ let TeamsController = class TeamsController {
             teams: mock,
         });
     }
-    findOne(id) {
-        return this.teamsService.findOne(+id);
+    findOne(name) {
+        return this.teamsService.findOne(name);
     }
     update(id, updateTeamDto) {
         return this.teamsService.update(+id, updateTeamDto);
@@ -47,9 +46,8 @@ exports.TeamsController = TeamsController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
-    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_team_dto_1.CreateTeamDto, Object]),
+    __metadata("design:paramtypes", [team_dto_1.CreateTeamDto]),
     __metadata("design:returntype", void 0)
 ], TeamsController.prototype, "create", null);
 __decorate([
@@ -60,8 +58,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TeamsController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Get)(':name'),
+    __param(0, (0, common_1.Param)('name')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
@@ -71,7 +69,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_team_dto_1.UpdateTeamDto]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], TeamsController.prototype, "update", null);
 __decorate([

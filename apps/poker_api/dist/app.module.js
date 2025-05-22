@@ -12,6 +12,12 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const teams_module_1 = require("./teams/teams.module");
 const config_1 = require("@nestjs/config");
+const auth_module_1 = require("./auth/auth.module");
+const users_service_1 = require("./users/users.service");
+const users_controller_1 = require("./users/users.controller");
+const users_module_1 = require("./users/users.module");
+const dynamodb_module_1 = require("./dynamodb.module");
+const jwt_1 = require("@nestjs/jwt");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -20,9 +26,15 @@ exports.AppModule = AppModule = __decorate([
         imports: [teams_module_1.TeamsModule,
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-            })],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+                load: [() => ({
+                        JWT_SECRET: process.env.JWT_SECRET,
+                    }),]
+            }),
+            dynamodb_module_1.DynamoDBModule,
+            auth_module_1.AuthModule,
+            users_module_1.UsersModule],
+        controllers: [app_controller_1.AppController, users_controller_1.UsersController],
+        providers: [app_service_1.AppService, users_service_1.UsersService, jwt_1.JwtService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

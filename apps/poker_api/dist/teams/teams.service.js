@@ -21,24 +21,47 @@ let TeamsService = class TeamsService {
         this.dynamoClient = dynamoClient;
     }
     async create(createTeamDto) {
+        createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
+        const hasTeam = await this.findOne(createTeamDto.name);
+        if (hasTeam) {
+            throw new common_1.ConflictException({
+                error: `This team already exits`
+            });
+        }
         const uuid = crypto.randomUUID();
         createTeamDto.id = uuid;
-        console.log(createTeamDto);
-        const result = await this.dynamoClient.send(new lib_dynamodb_1.PutCommand({
-            TableName: 'poker_teams',
-            Item: {
-                pk: `TEAM#${createTeamDto.id}`,
-                sk: `TEAM#${createTeamDto.name}`,
-                ...createTeamDto,
-            },
-        }));
-        return result;
+        createTeamDto.name_sk = `#TEAM#${createTeamDto.name}`;
+        try {
+            await this.dynamoClient.send(new lib_dynamodb_1.PutCommand({
+                TableName: 'poker_team',
+                Item: {
+                    pk: `${createTeamDto.name}`,
+                    sk: `${createTeamDto.name_sk}`,
+                    ...createTeamDto,
+                },
+            }));
+            return createTeamDto;
+        }
+        catch (error) {
+            console.error('Error creating team:', error);
+            throw new Error('Error creating team');
+        }
     }
     findAll() {
         return `This action returns all teams`;
     }
-    findOne(id) {
-        return `This action returns a #${id} team`;
+    async findOne(name) {
+        const hasTeam = await this.dynamoClient.send(new lib_dynamodb_1.GetCommand({
+            TableName: "poker_team",
+            Key: {
+                name: name,
+                name_sk: `#TEAM#${name}`
+            }
+        }));
+        if (hasTeam) {
+            return hasTeam.Item;
+        }
+        return hasTeam;
     }
     update(id, updateTeamDto) {
         return `This action updates a #${id} team`;

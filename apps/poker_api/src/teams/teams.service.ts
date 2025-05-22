@@ -1,7 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
-import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { ConflictException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { CreateTeamDto } from './dto/team.dto';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 
 @Injectable()
 export class TeamsService {
@@ -13,33 +12,64 @@ export class TeamsService {
 
   async create(createTeamDto: CreateTeamDto) {
 
+    createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
+
+    const hasTeam = await this.findOne(createTeamDto.name)
+
+    if (hasTeam) {
+      throw new ConflictException({
+        error: `This team already exits`
+      })
+    }
+
     const uuid = crypto.randomUUID();
     createTeamDto.id = uuid;
+    createTeamDto.name_sk = `#TEAM#${createTeamDto.name}`
 
-    console.log(createTeamDto)
-    const result = await this.dynamoClient.send(
-      new PutCommand({
-        TableName: 'poker_teams',
-        Item: {
-          pk: `TEAM#${createTeamDto.id}`,
-          sk: `TEAM#${createTeamDto.name}`,
-          ...createTeamDto,
-        },
-      }),
-    )
+    try {
+      await this.dynamoClient.send(
+        new PutCommand({
+          TableName: 'poker_team',
+          Item: {
+            pk: `${createTeamDto.name}`,
+            sk: `${createTeamDto.name_sk}`,
+            ...createTeamDto,
+          },
+        }),
+      )
 
-    return result;
+      return createTeamDto;
+    }
+    catch (error) {
+      console.error('Error creating team:', error);
+      throw new Error('Error creating team');
+    }
   }
 
   findAll() {
     return `This action returns all teams`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} team`;
+  async findOne(name: string) {
+
+    const hasTeam = await this.dynamoClient.send(
+      new GetCommand({
+        TableName: "poker_team",
+        Key: {
+          name: name,
+          name_sk: `#TEAM#${name}`
+        }
+      })
+    )
+
+    if (hasTeam) {
+      return hasTeam.Item
+    }
+
+    return hasTeam;
   }
 
-  update(id: number, updateTeamDto: UpdateTeamDto) {
+  update(id: number, updateTeamDto: any) {
     return `This action updates a #${id} team`;
   }
 

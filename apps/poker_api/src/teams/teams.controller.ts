@@ -1,17 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ConflictException, HttpException, HttpStatus } from '@nestjs/common';
 import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { UpdateTeamDto } from './dto/update-team.dto';
+import { CreateTeamDto } from './dto/team.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('teams')
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) { }
 
   @Post()
-  create(@Body() createTeamDto: CreateTeamDto, @Res() res) {
+  create(@Body() createTeamDto: CreateTeamDto) {
 
     const result = this.teamsService.create(createTeamDto);
-    return res.status(201).json(result)
+    return result
+
   }
 
   @Get()
@@ -23,13 +24,13 @@ export class TeamsController {
     });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.teamsService.findOne(+id);
+  @Get(':name')
+  findOne(@Param('name') name: string) {
+    return this.teamsService.findOne(name);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto) {
+  update(@Param('id') id: string, @Body() updateTeamDto: any) {
     return this.teamsService.update(+id, updateTeamDto);
   }
 

@@ -1,14 +1,14 @@
 import { UUID } from "crypto";
-export interface Members {
+import { playerType } from "../enums/player.enum";
+export interface PlayerInterface {
     email: string;
+    type: playerType;
 }
 export declare class Team {
     id: UUID;
     name: string;
+    name_sk: string;
     description: string;
-    user_adm: string;
-    scrum_master: string;
-    members: Members[];
     createdAt: string;
     updatedAt: string;
     isActive: boolean;

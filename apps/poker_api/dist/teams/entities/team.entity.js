@@ -4,10 +4,8 @@ exports.Team = void 0;
 class Team {
     id;
     name;
+    name_sk;
     description;
-    user_adm;
-    scrum_master;
-    members;
     createdAt;
     updatedAt;
     isActive;
