@@ -11,13 +11,16 @@ const common_1 = require("@nestjs/common");
 const teams_service_1 = require("./teams.service");
 const teams_controller_1 = require("./teams.controller");
 const dynamodb_module_1 = require("../dynamodb.module");
+const auth_service_1 = require("../auth/auth.service");
+const jwt_1 = require("@nestjs/jwt");
+const users_service_1 = require("../users/users.service");
 let TeamsModule = class TeamsModule {
 };
 exports.TeamsModule = TeamsModule;
 exports.TeamsModule = TeamsModule = __decorate([
     (0, common_1.Module)({
         controllers: [teams_controller_1.TeamsController],
-        providers: [teams_service_1.TeamsService],
+        providers: [teams_service_1.TeamsService, auth_service_1.AuthService, jwt_1.JwtService, users_service_1.UsersService],
         imports: [dynamodb_module_1.DynamoDBModule],
     })
 ], TeamsModule);

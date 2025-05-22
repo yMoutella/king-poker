@@ -16,6 +16,7 @@ exports.TeamsController = void 0;
 const common_1 = require("@nestjs/common");
 const teams_service_1 = require("./teams.service");
 const team_dto_1 = require("./dto/team.dto");
+const auth_guard_1 = require("../auth/auth.guard");
 let TeamsController = class TeamsController {
     teamsService;
     constructor(teamsService) {
@@ -81,6 +82,7 @@ __decorate([
 ], TeamsController.prototype, "remove", null);
 exports.TeamsController = TeamsController = __decorate([
     (0, common_1.Controller)('teams'),
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     __metadata("design:paramtypes", [teams_service_1.TeamsService])
 ], TeamsController);
 //# sourceMappingURL=teams.controller.js.map
