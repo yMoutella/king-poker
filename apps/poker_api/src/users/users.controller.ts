@@ -5,12 +5,11 @@ import { Response } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UsersController {
     constructor
         (private readonly usersService: UsersService) { }
 
-
-    @UseGuards(AuthGuard)
     @Post()
     async getUser(@Body() body: LoginDto, @Res() res: Response) {
 

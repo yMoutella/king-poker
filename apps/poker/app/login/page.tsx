@@ -22,13 +22,17 @@ export default async function LoginPage() {
               redirect: true,
               redirectTo: "/teams",
               email: formData.get("email") as string,
+              name: "Yure Moutella",
               pk: formData.get("pk") as string,
             })
           }} className="space-y-4">
             <h1 className="text-2xl font-semibold text-center">Join</h1  >
             <div className="space-y-2">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" type="text" name="name" placeholder="your beautiful name" required />
+
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="text" name="email" placeholder="you@example.com" />
+              <Input id="email" type="text" name="email" placeholder="you@example.com" required />
             </div>
             {/* <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

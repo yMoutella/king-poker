@@ -32,10 +32,6 @@ export default async function AvatarComponent() {
                         redirectTo: "/login",
                     })
                 }}> Sign out</Button>
-                < Button className="w-full cursor-pointer" variant="outline" onClick={async () => {
-                    "use server"
-                    console.log(session)
-                }}> teste </Button>
             </PopoverContent>
         </Popover >
 

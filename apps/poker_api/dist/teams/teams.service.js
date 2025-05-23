@@ -15,10 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TeamsService = void 0;
 const common_1 = require("@nestjs/common");
 const lib_dynamodb_1 = require("@aws-sdk/lib-dynamodb");
+const users_service_1 = require("../users/users.service");
 let TeamsService = class TeamsService {
     dynamoClient;
-    constructor(dynamoClient) {
+    userService;
+    constructor(dynamoClient, userService) {
         this.dynamoClient = dynamoClient;
+        this.userService = userService;
     }
     async create(createTeamDto) {
         createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
@@ -26,6 +29,13 @@ let TeamsService = class TeamsService {
         if (hasTeam) {
             throw new common_1.ConflictException({
                 error: `This team already exits`
+            });
+        }
+        const invalidTeamPlayers = await this.invalidTeamPlayers(createTeamDto.players);
+        if (invalidTeamPlayers.length > 0) {
+            throw new common_1.BadRequestException({
+                error: 'The following player(s) do not exist or is invalid!',
+                players: invalidTeamPlayers
             });
         }
         const uuid = crypto.randomUUID();
@@ -69,11 +79,22 @@ let TeamsService = class TeamsService {
     remove(id) {
         return `This action removes a #${id} team`;
     }
+    async invalidTeamPlayers(players) {
+        const returnedUsers = [];
+        for (const player of players) {
+            const result = await this.userService.findUser(player.email);
+            if (!result) {
+                returnedUsers.push(player);
+            }
+        }
+        return returnedUsers;
+    }
 };
 exports.TeamsService = TeamsService;
 exports.TeamsService = TeamsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, common_1.Inject)('DYNAMODB_CLIENT')),
-    __metadata("design:paramtypes", [lib_dynamodb_1.DynamoDBDocumentClient])
+    __metadata("design:paramtypes", [lib_dynamodb_1.DynamoDBDocumentClient,
+        users_service_1.UsersService])
 ], TeamsService);
 //# sourceMappingURL=teams.service.js.map

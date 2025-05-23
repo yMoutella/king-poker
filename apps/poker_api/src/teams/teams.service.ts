@@ -1,6 +1,8 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
 import { CreateTeamDto } from './dto/team.dto';
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { PlayerInterface } from './entities/team.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TeamsService {
@@ -8,6 +10,7 @@ export class TeamsService {
   constructor(
     @Inject('DYNAMODB_CLIENT')
     private readonly dynamoClient: DynamoDBDocumentClient,
+    private readonly userService: UsersService
   ) { }
 
   async create(createTeamDto: CreateTeamDto) {
@@ -19,6 +22,15 @@ export class TeamsService {
     if (hasTeam) {
       throw new ConflictException({
         error: `This team already exits`
+      })
+    }
+
+    const invalidTeamPlayers = await this.invalidTeamPlayers(createTeamDto.players)
+
+    if (invalidTeamPlayers.length > 0) {
+      throw new BadRequestException({
+        error: 'The following player(s) do not exist or is invalid!',
+        players: invalidTeamPlayers
       })
     }
 
@@ -76,4 +88,22 @@ export class TeamsService {
   remove(id: number) {
     return `This action removes a #${id} team`;
   }
+
+  private async invalidTeamPlayers(players: PlayerInterface[]): Promise<PlayerInterface[]> {
+
+    const returnedUsers: PlayerInterface[] = []
+
+    for (const player of players) {
+      const result = await this.userService.findUser(player.email)
+
+      if (!result) {
+        returnedUsers.push(player)
+      }
+
+    }
+
+    return returnedUsers
+
+  }
 }
+
