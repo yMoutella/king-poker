@@ -25,9 +25,9 @@ export class TeamsController {
     });
   }
 
-  @Get(':name')
-  findOne(@Param('name') name: string) {
-    return this.teamsService.findOne(name);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.teamsService.findOne(id);
   }
 
   @Patch(':id')
@@ -35,8 +35,9 @@ export class TeamsController {
     return this.teamsService.update(+id, updateTeamDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.teamsService.remove(+id);
+  @Delete(':name')
+  remove(@Param('name') id: string) {
+    const result = this.teamsService.remove(id)
+    return result
   }
 }

@@ -8,9 +8,8 @@ export interface PlayerInterface {
 }
 
 export class Team {
-    id_GSI: UUID;
+    id: UUID;
     name: string;
-    name_sk: string;
     description: string;
     createdAt: string;
     updatedAt: string;

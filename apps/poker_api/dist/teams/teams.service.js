@@ -25,12 +25,6 @@ let TeamsService = class TeamsService {
     }
     async create(createTeamDto) {
         createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
-        const hasTeam = await this.findOne(createTeamDto.name);
-        if (hasTeam) {
-            throw new common_1.ConflictException({
-                error: `This team already exits`
-            });
-        }
         const invalidTeamPlayers = await this.invalidTeamPlayers(createTeamDto.players);
         if (invalidTeamPlayers.length > 0) {
             throw new common_1.BadRequestException({
@@ -39,14 +33,14 @@ let TeamsService = class TeamsService {
             });
         }
         const uuid = crypto.randomUUID();
-        createTeamDto.id_GSI = uuid;
-        createTeamDto.name_sk = `#TEAM#${createTeamDto.name}`;
+        createTeamDto.id = uuid;
+        createTeamDto.name = `#TEAM#${createTeamDto.name}`;
         try {
             await this.dynamoClient.send(new lib_dynamodb_1.PutCommand({
                 TableName: 'poker_team',
                 Item: {
-                    pk: `${createTeamDto.name}`,
-                    sk: `${createTeamDto.name_sk}`,
+                    pk: `${createTeamDto.id}`,
+                    sk: `${createTeamDto.name}`,
                     ...createTeamDto,
                 },
             }));
@@ -60,24 +54,25 @@ let TeamsService = class TeamsService {
     findAll() {
         return `This action returns all teams`;
     }
-    async findOne(name) {
+    async findOne(id) {
         const hasTeam = await this.dynamoClient.send(new lib_dynamodb_1.GetCommand({
             TableName: "poker_team",
             Key: {
-                name: name,
-                name_sk: `#TEAM#${name}`
+                id: id,
             }
         }));
-        if (hasTeam) {
+        console.log(hasTeam);
+        if (hasTeam.Item) {
             return hasTeam.Item;
         }
-        return hasTeam;
+        throw new common_1.NotFoundException({
+            error: "Team not found!"
+        });
     }
     update(id, updateTeamDto) {
         return `This action updates a #${id} team`;
     }
-    remove(id) {
-        return `This action removes a #${id} team`;
+    async remove(id) {
     }
     async invalidTeamPlayers(players) {
         const returnedUsers = [];

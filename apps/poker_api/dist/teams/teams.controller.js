@@ -33,14 +33,15 @@ let TeamsController = class TeamsController {
             teams: mock,
         });
     }
-    findOne(name) {
-        return this.teamsService.findOne(name);
+    findOne(id) {
+        return this.teamsService.findOne(id);
     }
     update(id, updateTeamDto) {
         return this.teamsService.update(+id, updateTeamDto);
     }
     remove(id) {
-        return this.teamsService.remove(+id);
+        const result = this.teamsService.remove(id);
+        return result;
     }
 };
 exports.TeamsController = TeamsController;
@@ -59,8 +60,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TeamsController.prototype, "findAll", null);
 __decorate([
-    (0, common_1.Get)(':name'),
-    __param(0, (0, common_1.Param)('name')),
+    (0, common_1.Get)(':id'),
+    __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
@@ -74,8 +75,8 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TeamsController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    (0, common_1.Delete)(':name'),
+    __param(0, (0, common_1.Param)('name')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)

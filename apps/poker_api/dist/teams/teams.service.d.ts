@@ -7,8 +7,8 @@ export declare class TeamsService {
     constructor(dynamoClient: DynamoDBDocumentClient, userService: UsersService);
     create(createTeamDto: CreateTeamDto): Promise<CreateTeamDto>;
     findAll(): string;
-    findOne(name: string): Promise<Record<string, any> | undefined>;
+    findOne(id: string): Promise<Record<string, any>>;
     update(id: number, updateTeamDto: any): string;
-    remove(id: number): string;
+    remove(id: string): Promise<void>;
     private invalidTeamPlayers;
 }

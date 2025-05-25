@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Response } from '@nestjs/common';
 import { CreateTeamDto } from './dto/team.dto';
 import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 import { PlayerInterface } from './entities/team.entity';
@@ -17,14 +17,6 @@ export class TeamsService {
 
     createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
 
-    const hasTeam = await this.findOne(createTeamDto.name)
-
-    if (hasTeam) {
-      throw new ConflictException({
-        error: `This team already exits`
-      })
-    }
-
     const invalidTeamPlayers = await this.invalidTeamPlayers(createTeamDto.players)
 
     if (invalidTeamPlayers.length > 0) {
@@ -35,16 +27,17 @@ export class TeamsService {
     }
 
     const uuid = crypto.randomUUID();
-    createTeamDto.id_GSI = uuid;
-    createTeamDto.name_sk = `#TEAM#${createTeamDto.name}`
+
+    createTeamDto.id = uuid;
+    createTeamDto.name = `#TEAM#${createTeamDto.name}`
 
     try {
       await this.dynamoClient.send(
         new PutCommand({
           TableName: 'poker_team',
           Item: {
-            pk: `${createTeamDto.name}`,
-            sk: `${createTeamDto.name_sk}`,
+            pk: `${createTeamDto.id}`,
+            sk: `${createTeamDto.name}`,
             ...createTeamDto,
           },
         }),
@@ -62,31 +55,35 @@ export class TeamsService {
     return `This action returns all teams`;
   }
 
-  async findOne(name: string) {
+  async findOne(id: string) {
 
     const hasTeam = await this.dynamoClient.send(
       new GetCommand({
         TableName: "poker_team",
         Key: {
-          name: name,
-          name_sk: `#TEAM#${name}`
+          id: id,
+          // name: "#TEAM#green_apple"
         }
       })
     )
 
-    if (hasTeam) {
+    console.log(hasTeam)
+
+    if (hasTeam.Item) {
       return hasTeam.Item
     }
 
-    return hasTeam;
+    throw new NotFoundException({
+      error: "Team not found!"
+    })
   }
 
   update(id: number, updateTeamDto: any) {
     return `This action updates a #${id} team`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} team`;
+  async remove(id: string) {
+    // const team = await this.findOne()
   }
 
   private async invalidTeamPlayers(players: PlayerInterface[]): Promise<PlayerInterface[]> {

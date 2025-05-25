@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Team = void 0;
 class Team {
-    id_GSI;
+    id;
     name;
-    name_sk;
     description;
     createdAt;
     updatedAt;
