@@ -35,7 +35,7 @@ export class TeamsService {
     }
 
     const uuid = crypto.randomUUID();
-    createTeamDto.id = uuid;
+    createTeamDto.id_GSI = uuid;
     createTeamDto.name_sk = `#TEAM#${createTeamDto.name}`
 
     try {

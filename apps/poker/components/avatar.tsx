@@ -9,12 +9,9 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Button } from "@/components/ui/button"
-import { auth, signOut } from "@/auth"
+import { signOut } from "@/auth"
 
 export default async function AvatarComponent() {
-
-    const session = await auth()
-
 
     return (
         <Popover>

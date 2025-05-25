@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean, IsDateString, IsEmail, IsEnum, IsNotEmpty, Length, ValidateNested } from "class-validator";
+import { IsArray, IsBoolean, IsDateString, IsEmail, IsEnum, IsNotEmpty, IsString, Length, ValidateNested } from "class-validator";
 import { PlayerInterface, Team } from "../entities/team.entity";
 import { PartialType } from "@nestjs/mapped-types";
 import { playerType } from "../enums/player.enum";
@@ -13,6 +13,10 @@ export class Player implements PlayerInterface {
     @IsEnum(playerType)
     type: playerType;
 
+    @IsNotEmpty()
+    @IsString()
+    name: string;
+
 }
 
 export class UpdateTeamDto extends PartialType(Team) {
@@ -20,7 +24,6 @@ export class UpdateTeamDto extends PartialType(Team) {
     @Length(3, 50)
     @IsNotEmpty()
     name: string;
-
 
     @Length(3, 255)
     @IsNotEmpty()

@@ -18,6 +18,7 @@ const class_transformer_1 = require("class-transformer");
 class Player {
     email;
     type;
+    name;
 }
 exports.Player = Player;
 __decorate([
@@ -30,6 +31,11 @@ __decorate([
     (0, class_validator_1.IsEnum)(player_enum_1.playerType),
     __metadata("design:type", String)
 ], Player.prototype, "type", void 0);
+__decorate([
+    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], Player.prototype, "name", void 0);
 class UpdateTeamDto extends (0, mapped_types_1.PartialType)(team_entity_1.Team) {
     name;
     description;

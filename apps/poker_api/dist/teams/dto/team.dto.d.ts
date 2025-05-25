@@ -3,6 +3,7 @@ import { playerType } from "../enums/player.enum";
 export declare class Player implements PlayerInterface {
     email: string;
     type: playerType;
+    name: string;
 }
 declare const UpdateTeamDto_base: import("@nestjs/mapped-types").MappedType<Partial<Team>>;
 export declare class UpdateTeamDto extends UpdateTeamDto_base {

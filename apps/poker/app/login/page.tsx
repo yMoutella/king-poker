@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "@/auth";
 import Form from "next/form"
 import { Metadata } from "next";
+import LoginFields from "@/components/loginFields";
 
 export const metadata: Metadata = {
   title: "Login",
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function LoginPage() {
+
   return (
     <div className="flex items-center justify-center min-h-screen ">
       <Card className="w-full max-w-sm p-6 rounded-2xl shadow-md">
@@ -26,20 +28,8 @@ export default async function LoginPage() {
               pk: formData.get("pk") as string,
             })
           }} className="space-y-4">
-            <h1 className="text-2xl font-semibold text-center">Join</h1  >
-            <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" type="text" name="name" placeholder="your beautiful name" required />
-
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="text" name="email" placeholder="you@example.com" required />
-            </div>
-            {/* <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" />
-            </div> */}
-            <Button className="w-full" type="submit">Signup</Button>
-          </Form>
+            <LoginFields />
+                      </Form>
         </CardContent>
       </Card>
     </div >
