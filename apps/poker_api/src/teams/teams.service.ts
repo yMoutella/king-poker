@@ -62,7 +62,6 @@ export class TeamsService {
         TableName: "poker_team",
         Key: {
           id: id,
-          // name: "#TEAM#green_apple"
         }
       })
     )
