@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ConflictException, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/team.dto';
+import { CreateTeamDto, UpdateTeamDto } from './dto/team.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('teams')
@@ -17,12 +17,11 @@ export class TeamsController {
   }
 
   @Get()
-  findAll(@Res() response) {
-    const mock: string = this.teamsService.findAll()
-    return response.status(200).json({
-      message: 'Teams retrieved successfully',
-      teams: mock,
-    });
+  async findAll(@Body() findFilter: { createdBy: string }, @Res() response) {
+
+    const result: object = await this.teamsService.findTeamsUserFilter(findFilter)
+    return response.status(200).json(result);
+
   }
 
   @Get(':id')
@@ -31,13 +30,13 @@ export class TeamsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTeamDto: any) {
-    return this.teamsService.update(+id, updateTeamDto);
+  update(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto) {
+    return this.teamsService.update(id, updateTeamDto);
   }
 
-  @Delete(':name')
-  remove(@Param('name') id: string) {
-    const result = this.teamsService.remove(id)
-    return result
+  @Delete(':id')
+  async remove(@Param('id') id: string, @Res() response) {
+    const result = await this.teamsService.remove(id)
+    return response.status(200).json(result)
   }
 }

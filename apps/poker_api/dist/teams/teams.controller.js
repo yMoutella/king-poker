@@ -25,22 +25,19 @@ let TeamsController = class TeamsController {
         const result = this.teamsService.create(createTeamDto);
         return result;
     }
-    findAll(response) {
-        const mock = this.teamsService.findAll();
-        return response.status(200).json({
-            message: 'Teams retrieved successfully',
-            teams: mock,
-        });
+    async findAll(findFilter, response) {
+        const result = await this.teamsService.findTeamsUserFilter(findFilter);
+        return response.status(200).json(result);
     }
     findOne(id) {
         return this.teamsService.findOne(id);
     }
     update(id, updateTeamDto) {
-        return this.teamsService.update(+id, updateTeamDto);
+        return this.teamsService.update(id, updateTeamDto);
     }
-    remove(id) {
-        const result = this.teamsService.remove(id);
-        return result;
+    async remove(id, response) {
+        const result = await this.teamsService.remove(id);
+        return response.status(200).json(result);
     }
 };
 exports.TeamsController = TeamsController;
@@ -53,10 +50,11 @@ __decorate([
 ], TeamsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    __param(0, (0, common_1.Res)()),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
 ], TeamsController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
@@ -70,15 +68,16 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, team_dto_1.UpdateTeamDto]),
     __metadata("design:returntype", void 0)
 ], TeamsController.prototype, "update", null);
 __decorate([
-    (0, common_1.Delete)(':name'),
-    __param(0, (0, common_1.Param)('name')),
+    (0, common_1.Delete)(':id'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], TeamsController.prototype, "remove", null);
 exports.TeamsController = TeamsController = __decorate([
     (0, common_1.Controller)('teams'),

@@ -16,5 +16,6 @@ export class Team {
     isActive: boolean;
     isDeleted: boolean;
     createdBy: string;
+    createdBy_pk: string;
     updatedBy: string;
 }

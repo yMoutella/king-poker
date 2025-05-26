@@ -10,6 +10,7 @@ class Team {
     isActive;
     isDeleted;
     createdBy;
+    createdBy_pk;
     updatedBy;
 }
 exports.Team = Team;

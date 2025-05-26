@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Response } from '@nestjs/common';
-import { CreateTeamDto } from './dto/team.dto';
-import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { CreateTeamDto, UpdateTeamDto } from './dto/team.dto';
+import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { PlayerInterface } from './entities/team.entity';
 import { UsersService } from 'src/users/users.service';
 
@@ -17,19 +17,13 @@ export class TeamsService {
 
     createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
 
-    const invalidTeamPlayers = await this.invalidTeamPlayers(createTeamDto.players)
-
-    if (invalidTeamPlayers.length > 0) {
-      throw new BadRequestException({
-        error: 'The following player(s) do not exist or is invalid!',
-        players: invalidTeamPlayers
-      })
-    }
+    await this.checkInvalidTeamPlayers(createTeamDto.players)
 
     const uuid = crypto.randomUUID();
 
     createTeamDto.id = uuid;
     createTeamDto.name = `#TEAM#${createTeamDto.name}`
+    createTeamDto.createdBy_pk = createTeamDto.createdBy;
 
     try {
       await this.dynamoClient.send(
@@ -51,8 +45,33 @@ export class TeamsService {
     }
   }
 
-  findAll() {
-    return `This action returns all teams`;
+  async findTeamsUserFilter(filter: { createdBy: string }) {
+
+    const { createdBy } = filter;
+
+    try {
+      const result: any = await this.dynamoClient.send(
+        new QueryCommand({
+          TableName: 'poker_team',
+          IndexName: 'createdBy',
+          KeyConditionExpression: `createdBy_pk = :pk`,
+          ExpressionAttributeValues: {
+            ':pk': createdBy,
+          },
+        })
+      );
+      return {
+        message: 'Teams retrieved successfully',
+        teams: result.Items,
+      }
+    }
+    catch (error) {
+      console.error('Error fetching user:', error);
+      throw new HttpException({
+        message: "Error fetching teams",
+        error: error.message,
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async findOne(id: string) {
@@ -66,40 +85,96 @@ export class TeamsService {
       })
     )
 
-    console.log(hasTeam)
-
     if (hasTeam.Item) {
       return hasTeam.Item
     }
 
     throw new NotFoundException({
-      error: "Team not found!"
+      message: "Team not found!"
     })
   }
 
-  update(id: number, updateTeamDto: any) {
-    return `This action updates a #${id} team`;
-  }
+  async update(id: string, updateTeamDto: UpdateTeamDto) {
 
-  async remove(id: string) {
-    // const team = await this.findOne()
-  }
+    await this.findOne(id)
+    await this.checkInvalidTeamPlayers(updateTeamDto.players)
 
-  private async invalidTeamPlayers(players: PlayerInterface[]): Promise<PlayerInterface[]> {
+    const { ...fields } = updateTeamDto;
+    const updateExpressions: string[] = []
+    const expressionAttributeNames = {}
+    const expressionAtributeValues = {}
 
-    const returnedUsers: PlayerInterface[] = []
+    Object.entries(fields).forEach(([key, value]) => {
+      if (value !== undefined || value !== null) {
+        updateExpressions.push(`#${key} = :${key}`);
+        expressionAttributeNames[`#${key}`] = key;
+        expressionAtributeValues[`:${key}`] = value;
+      }
+    });
 
-    for (const player of players) {
-      const result = await this.userService.findUser(player.email)
+    try {
 
-      if (!result) {
-        returnedUsers.push(player)
+      await this.dynamoClient.send(new UpdateCommand({
+        TableName: 'poker_team',
+        Key: {
+          id: id,
+        },
+        UpdateExpression: `SET ${updateExpressions.join(', ')}`,
+        ExpressionAttributeNames: expressionAttributeNames,
+        ExpressionAttributeValues: expressionAtributeValues,
+      }))
+
+      return {
+        message: "Team updated successfully",
+        team: updateTeamDto,
       }
 
+    } catch (error) {
+      throw new HttpException({
+        message: "Error updating team",
+        error: error.message,
+      }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private async checkInvalidTeamPlayers(players: PlayerInterface[]): Promise<void> {
+    const invalidPlayers: PlayerInterface[] = [];
+
+    for (const player of players) {
+      const result = await this.userService.findUser(player.email);
+
+      if (!result) {
+        invalidPlayers.push(player);
+      }
     }
 
-    return returnedUsers
+    if (invalidPlayers.length > 0) {
+      throw new ConflictException({
+        error: 'The following player(s) do not exist or are invalid!',
+        players: invalidPlayers,
+      });
+    }
+  }
 
+
+  async remove(id: string) {
+
+    await this.findOne(id)
+
+    try {
+      await this.dynamoClient.send(
+        new DeleteCommand({
+          TableName: 'poker_team',
+          Key: {
+            id: id,
+          }
+        }))
+      return {
+        message: "Team deleted successfully",
+      }
+    } catch (error) {
+      console.error('Error deleting team:', error);
+      throw new HttpException({ message: "Error deleting team" }, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
-
