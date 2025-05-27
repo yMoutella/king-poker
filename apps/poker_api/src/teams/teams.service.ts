@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Response } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, Response } from '@nestjs/common';
 import { CreateTeamDto, UpdateTeamDto } from './dto/team.dto';
 import { DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 import { PlayerInterface } from './entities/team.entity';
@@ -15,14 +15,11 @@ export class TeamsService {
 
   async create(createTeamDto: CreateTeamDto) {
 
-    createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
-
     await this.checkInvalidTeamPlayers(createTeamDto.players)
 
     const uuid = crypto.randomUUID();
 
     createTeamDto.id = uuid;
-    createTeamDto.name = `#TEAM#${createTeamDto.name}`
     createTeamDto.createdBy_pk = createTeamDto.createdBy;
 
     try {
@@ -40,14 +37,12 @@ export class TeamsService {
       return createTeamDto;
     }
     catch (error) {
-      console.error('Error creating team:', error);
       throw new Error('Error creating team');
     }
   }
 
-  async findTeamsUserFilter(filter: { createdBy: string }) {
+  async findTeamsUserFilter(createdBy: string) {
 
-    const { createdBy } = filter;
 
     try {
       const result: any = await this.dynamoClient.send(
@@ -66,7 +61,6 @@ export class TeamsService {
       }
     }
     catch (error) {
-      console.error('Error fetching user:', error);
       throw new HttpException({
         message: "Error fetching teams",
         error: error.message,
@@ -173,7 +167,6 @@ export class TeamsService {
         message: "Team deleted successfully",
       }
     } catch (error) {
-      console.error('Error deleting team:', error);
       throw new HttpException({ message: "Error deleting team" }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

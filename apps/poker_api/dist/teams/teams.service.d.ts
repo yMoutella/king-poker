@@ -6,9 +6,7 @@ export declare class TeamsService {
     private readonly userService;
     constructor(dynamoClient: DynamoDBDocumentClient, userService: UsersService);
     create(createTeamDto: CreateTeamDto): Promise<CreateTeamDto>;
-    findTeamsUserFilter(filter: {
-        createdBy: string;
-    }): Promise<{
+    findTeamsUserFilter(createdBy: string): Promise<{
         message: string;
         teams: any;
     }>;

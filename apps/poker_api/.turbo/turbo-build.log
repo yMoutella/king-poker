@@ -2,4 +2,4 @@
 [2K[1G[1myarn run v1.22.22[22m
 [2K[1G[33mwarning[39m package.json: "dependencies" has dependency "@types/express" with range "^5.0.2" that collides with a dependency in "devDependencies" of the same name with version "^5.0.0"
 [2K[1G[2m$ nest build[22m
-[2K[1GDone in 2.17s.
+[2K[1GDone in 2.48s.

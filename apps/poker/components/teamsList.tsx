@@ -1,89 +1,38 @@
-"use client"
+'use client'
 
-import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-    Dialog,
-    DialogContent,
-    DialogClose,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { useState } from "react";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { Info } from "lucide-react";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { useState } from "react";
+import { Team } from "@/interfaces/team";
+import { format } from 'date-fns'
+import CreateTeamModal from "./createTeamModal";
 
+export default function TeamsList(props: { teams: Team[] }) {
 
-export default function TeamList() {
-
-    const [items, setItems] = useState([
-        { name: "Pineapple team", date: "2025-04-01" },
-        { name: "Apple juice team", date: "2025-03-28" },
-        { name: "Dragon fruit team", date: "2025-03-15" },
-    ]);
-
+    const [items, setItems] = useState<Team[]>(props.teams);
     const [selected, setSelected] = useState<string | null>(null);
 
+    const addTeam = (newTeam: Team): void => {
+        setItems(prev => [...prev, newTeam])
+    }
 
     return (
-        <div>
-            < div className="flex justify-center mb-2" >
-                <div className="w-full max-w-3xl flex justify-end">
-                    <Dialog>
-                        <DialogTrigger asChild>
-                            <Button variant="outline">Create new team</Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                                <DialogTitle>New team</DialogTitle>
-                                <DialogDescription>
-                                    Create your new team here. You'll be able to add mates in the team main page.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="items-center gap-4">
-                                    <Input id="name" value="" placeholder="Team name" className="col-span-3" />
-                                </div>
-                            </div>
-                            <DialogFooter className="sm:justify-between">
-                                <DialogClose asChild>
-                                    <Button type="button" variant="secondary">
-                                        Cancel
-                                    </Button>
-                                </DialogClose>
-                                <Button type="submit">Save changes</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </div >
+        <>
+            <CreateTeamModal addTeam={addTeam} />
             <div className="flex-col justify-center">
                 <main className="flex flex-col items-center ">
                     <div className="w-full max-w-3xl space-y-1">
                         <Card className="rounded-2xl">
                             <CardContent className="p-3 space-y-4">
-                                <ScrollArea className="h-64 space-y-2">
+                                <ScrollArea className="h-100 space-y-2 overflow-scroll">
                                     {items.length > 0 ? (
                                         <TooltipProvider>
-                                            {items.map((item, index) => {
+                                            {items.map((item: Team, index) => {
                                                 const isSelected = selected === item.name;
                                                 return (
                                                     <Tooltip key={index}>
@@ -96,7 +45,7 @@ export default function TeamList() {
                                                                 <div className="flex items-center space-x-3">
                                                                     <Avatar>
                                                                         <AvatarFallback>
-                                                                            {item.name.charAt(0)}
+                                                                            {item.name!.charAt(0)}
                                                                         </AvatarFallback>
                                                                     </Avatar>
                                                                     <div>
@@ -104,7 +53,7 @@ export default function TeamList() {
                                                                             {item.name}
                                                                         </p>
                                                                         <p className="text-sm text-muted-foreground">
-                                                                            Last active: {item.date}
+                                                                            Updated in: {format(new Date(item.updatedAt), 'dd/MM/yyyy - HH:mm:ss')}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -114,9 +63,6 @@ export default function TeamList() {
                                                                 </div>
                                                             </div>
                                                         </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>Created: {item.date}</p>
-                                                        </TooltipContent>
                                                     </Tooltip>
                                                 );
                                             })}
@@ -156,7 +102,6 @@ export default function TeamList() {
                     </div>
                 </main>
             </div>
-        </div>
+        </>
     )
-
 }
