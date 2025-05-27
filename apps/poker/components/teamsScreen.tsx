@@ -6,7 +6,7 @@ import TeamsList from "./teamsList";
 
 export default async function TeamsScreen() {
 
-    const { teams } = await getTeams()
+    const teams = await getTeams()
 
     return (
         <div>
