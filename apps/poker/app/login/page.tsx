@@ -24,12 +24,11 @@ export default async function LoginPage() {
               redirect: true,
               redirectTo: "/teams",
               email: formData.get("email") as string,
-              name: "Yure Moutella",
               pk: formData.get("pk") as string,
             })
           }} className="space-y-4">
             <LoginFields />
-                      </Form>
+          </Form>
         </CardContent>
       </Card>
     </div >

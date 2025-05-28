@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ConflictException, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, ConflictException, HttpException, HttpStatus, UseGuards, Header } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto, UpdateTeamDto } from './dto/team.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('teams')
-// @UseGuards(AuthGuard)
+@UseGuards(AuthGuard)
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) { }
 
@@ -16,10 +16,10 @@ export class TeamsController {
 
   }
 
-  @Get()
-  async findAll(@Body() findFilter: { createdBy: string }, @Res() response) {
+  @Get(':createdBy')
+  async findAll(@Param('createdBy') createdBy: string, @Res() response) {
 
-    const result: object = await this.teamsService.findTeamsUserFilter(findFilter)
+    const result: object = await this.teamsService.findTeamsUserFilter(createdBy)
     return response.status(200).json(result);
 
   }

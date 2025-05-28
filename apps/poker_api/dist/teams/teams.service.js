@@ -24,11 +24,9 @@ let TeamsService = class TeamsService {
         this.userService = userService;
     }
     async create(createTeamDto) {
-        createTeamDto.name = createTeamDto.name.replaceAll(' ', '_').toLowerCase();
         await this.checkInvalidTeamPlayers(createTeamDto.players);
         const uuid = crypto.randomUUID();
         createTeamDto.id = uuid;
-        createTeamDto.name = `#TEAM#${createTeamDto.name}`;
         createTeamDto.createdBy_pk = createTeamDto.createdBy;
         try {
             await this.dynamoClient.send(new lib_dynamodb_1.PutCommand({
@@ -42,12 +40,10 @@ let TeamsService = class TeamsService {
             return createTeamDto;
         }
         catch (error) {
-            console.error('Error creating team:', error);
             throw new Error('Error creating team');
         }
     }
-    async findTeamsUserFilter(filter) {
-        const { createdBy } = filter;
+    async findTeamsUserFilter(createdBy) {
         try {
             const result = await this.dynamoClient.send(new lib_dynamodb_1.QueryCommand({
                 TableName: 'poker_team',
@@ -63,7 +59,6 @@ let TeamsService = class TeamsService {
             };
         }
         catch (error) {
-            console.error('Error fetching user:', error);
             throw new common_1.HttpException({
                 message: "Error fetching teams",
                 error: error.message,
@@ -149,7 +144,6 @@ let TeamsService = class TeamsService {
             };
         }
         catch (error) {
-            console.error('Error deleting team:', error);
             throw new common_1.HttpException({ message: "Error deleting team" }, common_1.HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

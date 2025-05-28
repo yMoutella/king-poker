@@ -4,9 +4,7 @@ export declare class TeamsController {
     private readonly teamsService;
     constructor(teamsService: TeamsService);
     create(createTeamDto: CreateTeamDto): Promise<CreateTeamDto>;
-    findAll(findFilter: {
-        createdBy: string;
-    }, response: any): Promise<any>;
+    findAll(createdBy: string, response: any): Promise<any>;
     findOne(id: string): Promise<Record<string, any>>;
     update(id: string, updateTeamDto: UpdateTeamDto): Promise<{
         message: string;

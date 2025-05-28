@@ -1,4 +1,4 @@
-import TeamList from "@/components/teamList";
+import TeamsScreen from "@/components/teamsScreen";
 import { Label } from "@/components/ui/label";
 import AvatarComponent from "@/components/avatar";
 import { Metadata } from "next";
@@ -26,7 +26,7 @@ export default async function MinimalPage() {
           </div>
         </div>
       </header>
-      <TeamList />
+      <TeamsScreen />
     </div>
   );
 }
