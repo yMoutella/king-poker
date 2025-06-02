@@ -10,6 +10,7 @@ export class AuthService {
     ) { }
 
     async signIn(email: string): Promise<{ access_token: string | null }> {
+
         const user = await this.usersService.findUser(email);
         if (!user) {
             throw new UnauthorizedException('Invalid credentials');

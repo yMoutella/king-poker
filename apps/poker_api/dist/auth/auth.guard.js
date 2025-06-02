@@ -32,7 +32,7 @@ let AuthGuard = class AuthGuard {
         }
         try {
             const payload = await this.jwtService.verifyAsync(token, {
-                secret: this.configService.get('JWT_SECRET'),
+                publicKey: this.configService.get('PUBLIC_KEY')
             });
         }
         catch (error) {

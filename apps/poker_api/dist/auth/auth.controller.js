@@ -16,14 +16,42 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const signIn_dto_1 = require("./dto/signIn.dto");
+const config_1 = require("@nestjs/config");
 let AuthController = class AuthController {
     AuthService;
-    constructor(AuthService) {
+    configService;
+    constructor(AuthService, configService) {
         this.AuthService = AuthService;
+        this.configService = configService;
     }
-    signIn(body, request) {
+    signIn(body, request, res) {
+        const apiToken = request.headers['api_token'];
+        const grant_type = request.headers['grant-type'];
+        this.validateReaders(grant_type, apiToken);
+        this.validateApiToken(apiToken);
         const { email } = body;
         return this.AuthService.signIn(email);
+    }
+    validateApiToken(apiToken) {
+        const getApiToken = this.configService.get('JWT_SECRET');
+        if (apiToken !== getApiToken) {
+            throw new common_1.BadRequestException({
+                code: 404,
+                message: "Invalid api token!!"
+            });
+        }
+    }
+    validateReaders(grant_type, apiToken) {
+        const badRequest = {
+            code: 404,
+            message: 'Invalid headers!!'
+        };
+        if (!apiToken || !grant_type) {
+            throw new common_1.BadRequestException(badRequest);
+        }
+        if (grant_type != 'client_credentials') {
+            throw new common_1.BadRequestException(badRequest);
+        }
     }
 };
 exports.AuthController = AuthController;
@@ -33,11 +61,12 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __param(1, (0, common_1.Req)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [signIn_dto_1.SignInDto, Object]),
+    __metadata("design:paramtypes", [signIn_dto_1.SignInDto, Object, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "signIn", null);
 exports.AuthController = AuthController = __decorate([
     (0, common_1.Controller)('auth'),
-    __metadata("design:paramtypes", [auth_service_1.AuthService])
+    __metadata("design:paramtypes", [auth_service_1.AuthService,
+        config_1.ConfigService])
 ], AuthController);
 //# sourceMappingURL=auth.controller.js.map
