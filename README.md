@@ -1,3 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">
+  <rect width="800" height="800" fill="#f6f1e7"/>
+
+  <!-- Red diamond -->
+  <polygon points="400,180 430,220 400,260 370,220"
+           fill="#c62828"/>
+
+  <!-- Crown -->
+  <g fill="none" stroke="#111" stroke-width="10" stroke-linejoin="round">
+    <path d="M250 360 L300 300 L350 360 L400 300 L450 360 L500 300 L550 360 L550 430 L250 430 Z"/>
+    <rect x="260" y="430" width="280" height="40" />
+  </g>
+
+  <!-- Text as paths (outlined via basic shapes approximation) -->
+  <g fill="#111">
+    <text x="400" y="530" font-size="72" font-weight="600"
+          text-anchor="middle" font-family="Arial, Helvetica, sans-serif">
+      KING POKER
+    </text>
+    <text x="400" y="585" font-size="32"
+          text-anchor="middle" letter-spacing="2"
+          font-family="Arial, Helvetica, sans-serif">
+      PLANNING POKER
+    </text>
+  </g>
+</svg>
+
+![king_poker_clean](https://github.com/user-attachments/assets/d073d60b-44d4-4484-b960-1ebb464def2d)
+
 # king-poker
 This is a page game to play the planning poker ritual 
 
