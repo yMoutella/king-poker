@@ -14,15 +14,6 @@
 
   <!-- Text as paths (outlined via basic shapes approximation) -->
   <g fill="#111">
-    <text x="400" y="530" font-size="72" font-weight="600"
-          text-anchor="middle" font-family="Arial, Helvetica, sans-serif">
-      KING POKER
-    </text>
-    <text x="400" y="585" font-size="32"
-          text-anchor="middle" letter-spacing="2"
-          font-family="Arial, Helvetica, sans-serif">
-      PLANNING POKER
-    </text>
   </g>
 </svg>
 
