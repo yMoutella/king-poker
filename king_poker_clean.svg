@@ -25,10 +25,3 @@
     </text>
   </g>
 </svg>
-
-![king_poker_clean](https://github.com/user-attachments/assets/d073d60b-44d4-4484-b960-1ebb464def2d)
-
-# king-poker
-This is a page game to play the planning poker ritual 
-
-The Entire project will be refactored to Vite. The complexity to deal with a hibryd application, given the business needs will be a better approach
