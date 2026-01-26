@@ -3,28 +3,83 @@ import { HugeiconsIcon } from "@hugeicons/react"
 import { Cancel01Icon, Tick02Icon } from "@hugeicons/core-free-icons"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
 
 interface UserStoryCard {
   id: string
   title: string
+  url?: string
   description?: string
 }
 
 export default function LeftPanel() {
   const [cards, setCards] = useState<UserStoryCard[]>([])
   const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingCardId, setEditingCardId] = useState<string | null>(null)
+  const [formData, setFormData] = useState({ title: "", url: "", description: "" })
 
-  const handleCreateCard = () => {
-    const newCard: UserStoryCard = {
-      id: crypto.randomUUID(),
-      title: `User Story ${cards.length + 1}`,
-      description: "Click to edit description",
+  const handleSaveCard = () => {
+    if (!formData.title.trim()) return
+    
+    if (editingCardId) {
+      // Update existing card
+      setCards(cards.map((card) =>
+        card.id === editingCardId
+          ? {
+              ...card,
+              title: formData.title,
+              url: formData.url || undefined,
+              description: formData.description || undefined,
+            }
+          : card
+      ))
+    } else {
+      // Create new card
+      const card: UserStoryCard = {
+        id: crypto.randomUUID(),
+        title: formData.title,
+        url: formData.url || undefined,
+        description: formData.description || undefined,
+      }
+      setCards([...cards, card])
     }
-    setCards([...cards, newCard])
+    
+    setFormData({ title: "", url: "", description: "" })
+    setEditingCardId(null)
+    setIsModalOpen(false)
+  }
+
+  const handleEditCard = (card: UserStoryCard) => {
+    setEditingCardId(card.id)
+    setFormData({
+      title: card.title,
+      url: card.url || "",
+      description: card.description || "",
+    })
+    setIsModalOpen(true)
   }
 
   const handleDeleteCard = (id: string) => {
     setCards(cards.filter((card) => card.id !== id))
+  }
+
+  const handleCancel = () => {
+    setFormData({ title: "", url: "", description: "" })
+    setEditingCardId(null)
+    setIsModalOpen(false)
   }
 
   return (
@@ -61,10 +116,57 @@ export default function LeftPanel() {
             <HugeiconsIcon icon={Tick02Icon} strokeWidth={2} className="size-4 text-primary" />
             <span className="text-sm font-medium">User Stories</span>
           </div>
-          <Button variant="outline" size="sm" onClick={handleCreateCard}>
-            <span className="text-base leading-none">+</span>
-            New Card
-          </Button>
+          <AlertDialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <AlertDialogTrigger
+              render={
+                <Button variant="outline" size="sm">
+                  <span className="text-base leading-none">+</span>
+                  New Card
+                </Button>
+              }
+            />
+            <AlertDialogContent className="max-w-md">
+              <AlertDialogHeader>
+                <AlertDialogTitle>{editingCardId ? "Edit User Story" : "Add User Story"}</AlertDialogTitle>
+              </AlertDialogHeader>
+              <div className="flex flex-col gap-4 py-2">
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    placeholder="Enter user story title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="url">URL Link</Label>
+                  <Input
+                    id="url"
+                    type="url"
+                    placeholder="https://example.com/ticket/123"
+                    value={formData.url}
+                    onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <Label htmlFor="description">Short Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Brief description of the user story"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  />
+                </div>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={handleCancel}>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleSaveCard} disabled={!formData.title.trim()}>
+                  {editingCardId ? "Save Changes" : "Add Card"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         {/* Cards List */}
@@ -86,9 +188,21 @@ export default function LeftPanel() {
                   key={card.id}
                   size="sm"
                   className="cursor-pointer transition-colors hover:bg-accent/50"
+                  onClick={() => handleEditCard(card)}
                 >
                   <CardHeader className="relative">
                     <CardTitle className="pr-6 text-xs">{card.title}</CardTitle>
+                    {card.url && (
+                      <a
+                        href={card.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[0.6rem] text-primary hover:underline truncate block"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {card.url}
+                      </a>
+                    )}
                     {card.description && (
                       <CardDescription className="text-[0.65rem]">
                         {card.description}
@@ -105,6 +219,19 @@ export default function LeftPanel() {
                     >
                       <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} className="size-3" />
                       <span className="sr-only">Delete card</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-xs"
+                      className="absolute right-2 top-8 opacity-0 transition-opacity group-hover/card:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        // TODO: Implement start voting functionality
+                        console.log("Start voting for card:", card.id)
+                      }}
+                    >
+                      <span className="text-[0.5rem]">▶</span>
+                      <span className="sr-only">Start voting</span>
                     </Button>
                   </CardHeader>
                 </Card>
