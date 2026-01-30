@@ -16,15 +16,13 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import type { UserStoryCard } from "../dashboard_page"
 
-interface UserStoryCard {
-  id: string
-  title: string
-  url?: string
-  description?: string
+interface LeftPanelProps {
+  onStartVoting: (card: UserStoryCard) => void
 }
 
-export default function LeftPanel() {
+export default function LeftPanel({ onStartVoting }: LeftPanelProps) {
   const [cards, setCards] = useState<UserStoryCard[]>([])
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -81,6 +79,7 @@ export default function LeftPanel() {
     setEditingCardId(null)
     setIsModalOpen(false)
   }
+
 
   return (
     <>
@@ -226,8 +225,7 @@ export default function LeftPanel() {
                       className="absolute right-2 top-8 opacity-0 transition-opacity group-hover/card:opacity-100"
                       onClick={(e) => {
                         e.stopPropagation()
-                        // TODO: Implement start voting functionality
-                        console.log("Start voting for card:", card.id)
+                        onStartVoting(card)
                       }}
                     >
                       <span className="text-[0.5rem]">▶</span>

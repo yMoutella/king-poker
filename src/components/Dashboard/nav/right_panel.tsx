@@ -2,18 +2,14 @@ import { useState } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { Tick02Icon } from "@hugeicons/core-free-icons"
 import { Button } from "@/components/ui/button"
+import type { UserStoryCard } from "../dashboard_page"
 
-// Mock current card for demonstration
-const MOCK_CURRENT_CARD = {
-  id: "1",
-  title: "User Authentication Flow",
-  url: "https://jira.example.com/browse/PROJ-123",
-  description: "Implement login, logout, and session management for the application",
+interface RightPanelProps {
+  currentCard: UserStoryCard | null
 }
 
-export default function RightPanel() {
+export default function RightPanel({ currentCard }: RightPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const currentCard = MOCK_CURRENT_CARD
 
   return (
     <>

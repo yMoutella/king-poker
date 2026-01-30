@@ -12,12 +12,12 @@ interface User {
 
 // Mock users for demonstration
 const MOCK_USERS: User[] = [
-  { id: "1", name: "Alice", hasVoted: true, vote: "5" },
-  { id: "2", name: "Bob", hasVoted: true, vote: "8" },
-  { id: "3", name: "Charlie", hasVoted: false },
-  { id: "4", name: "Diana", hasVoted: true, vote: "5" },
-  { id: "5", name: "Eve", hasVoted: true, vote: "3" },
-  { id: "6", name: "Frank", hasVoted: false },
+  { id: "1", name: "Alice", hasVoted: false, vote: "5" },
+  { id: "2", name: "Bob", hasVoted: false, vote: "8" },
+  { id: "3", name: "Charlie", hasVoted: false, vote: "10" },
+  { id: "4", name: "Diana", hasVoted: false, vote: "5" },
+  { id: "5", name: "Eve", hasVoted: false, vote: "3" },
+  { id: "6", name: "Frank", hasVoted: false, vote: "8" },
 ]
 
 export default function Table() {
@@ -58,9 +58,9 @@ export default function Table() {
     const positions = [
       "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2", // Top center
       "top-1/4 right-0 translate-x-1/2 -translate-y-1/2", // Top right
-      "bottom-1/4 right-0 translate-x-1/2 translate-y-1/2", // Bottom right
+      "bottom-1/6 right-0 translate-x-1/2 translate-y-1/2", // Bottom right
       "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2", // Bottom center
-      "bottom-1/4 left-0 -translate-x-1/2 translate-y-1/2", // Bottom left
+      "bottom-1/6 left-0 -translate-x-1/2 translate-y-1/2", // Bottom left
       "top-1/4 left-0 -translate-x-1/2 -translate-y-1/2", // Top left
     ]
     return positions[index % positions.length]
