@@ -20,11 +20,26 @@ const MOCK_USERS: User[] = [
   { id: "6", name: "Frank", hasVoted: false, vote: "8" },
 ]
 
-export default function Table() {
+interface TableProps {
+  timerStart: boolean
+  onTimerStarted?: () => void
+}
+
+export default function Table({ timerStart, onTimerStarted }: TableProps) {
   const [users] = useState<User[]>(MOCK_USERS)
   const [revealed, setRevealed] = useState(false)
   const [timer, setTimer] = useState(0)
-  const [isTimerRunning, setIsTimerRunning] = useState(true)
+  const [isTimerRunning, setIsTimerRunning] = useState(timerStart)
+
+  // Sync with timerStart prop when it becomes true
+  useEffect(() => {
+    if (timerStart) {
+      setIsTimerRunning(true)
+      setTimer(0)
+      setRevealed(false)
+      onTimerStarted?.()
+    }
+  }, [timerStart, onTimerStarted])
 
   useEffect(() => {
     let interval: NodeJS.Timeout

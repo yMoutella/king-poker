@@ -20,9 +20,10 @@ import type { UserStoryCard } from "../dashboard_page"
 
 interface LeftPanelProps {
   onStartVoting: (card: UserStoryCard) => void
+  onStartTimer: (start: boolean) => void
 }
 
-export default function LeftPanel({ onStartVoting }: LeftPanelProps) {
+export default function LeftPanel({ onStartVoting, onStartTimer }: LeftPanelProps) {
   const [cards, setCards] = useState<UserStoryCard[]>([])
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -226,6 +227,7 @@ export default function LeftPanel({ onStartVoting }: LeftPanelProps) {
                       onClick={(e) => {
                         e.stopPropagation()
                         onStartVoting(card)
+                        onStartTimer(true)
                       }}
                     >
                       <span className="text-[0.5rem]">▶</span>
